@@ -1,5 +1,6 @@
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtSql import QSqlTableModel
 from PyQt5.QtWidgets import QTableWidgetItem, QApplication, QMainWindow, QTableWidgetItem
 from PyQt5.QtWidgets import QTableWidgetItem, QWidget, QPushButton, QLineEdit
 
@@ -17,17 +18,18 @@ class Tracker(QMainWindow):
         self.conn = Data()
         self.view_data()
 
-        self.ui.btn_exchange.clicked.connect(self.open_new_transaction_window)
-        self.ui.btn_edit_transaction.clicked.connect(self.open_new_transaction_window)
-        self.ui.btn_delete_transaction.clicked.connect(self.delete_current_transaction)
-
-        self.ui.current_balance.setText(self.conn.total_balance())
-        self.ui.income_balance.setText(self.conn.total_income())
-        self.ui.outcome_balance.setText(self.conn.total_outcome())
-        self.ui.total_groceries.setText(self.conn.total_groceries())
-        self.ui.total_auto.setText(self.conn.total_auto())
-        self.ui.total_entertainment.setText(self.conn.total_entertainment())
-        self.ui.total_other.setText(self.conn.total_other())
+        # временный коммент
+        #  self.ui.btn_exchange.clicked.connect(self.open_new_transaction_window)
+        #  self.ui.btn_edit_transaction.clicked.connect(self.open_new_transaction_window)
+        #  self.ui.btn_delete_transaction.clicked.connect(self.delete_current_transaction)
+        #
+        #  self.ui.current_balance.setText(self.conn.total_balance())
+        #  self.ui.income_balance.setText(self.conn.total_income())
+        #  self.ui.outcome_balance.setText(self.conn.total_outcome())
+        #  self.ui.total_groceries.setText(self.conn.total_groceries())
+        #  self.ui.total_auto.setText(self.conn.total_auto())
+        #  self.ui.total_entertainment.setText(self.conn.total_entertainment())
+        #  self.ui.total_other.setText(self.conn.total_other())
 
     def view_data(self):
         self.model = QSqlTableModel(self)
@@ -81,8 +83,8 @@ class Tracker(QMainWindow):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
+    # Создаем класс главного окна приложения
+    traker = Tracker()
+    traker.show()
+    # перехватываем выход из приложения
     sys.exit(app.exec_())

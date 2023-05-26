@@ -1,16 +1,15 @@
 from PyQt5 import QtWidgets, QtSql
-import sqlite3
 
 class Data:
     def __init__(self):
         super(Data, self).__init__()
-        self.create_connection()
+        print(self.create_connection())
 
     def create_connection(self):
         db = QtSql.QSqlDatabase.addDatabase('QSQLITE')
         db.setDatabaseName('expense.db')
 
-        if not db.open():
+        if  db.open():
             QtWidgets.QMessageBox.critical(None, "Cannot open database",
                                            "Click Cancel to exit.", QtWidgets.QMessageBox.Cancel)
             return False
