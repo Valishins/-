@@ -28,7 +28,21 @@ class Tracker(QMainWindow):
         self.ui.exchange.clicked.connect(self.process_add_or_update_button)
         self.ui.repear.clicked.connect(self.delete_current_transaction)
         self.ui.openes.clicked.connect(self.create_report)
+
         # связываем слоты фильтрации
+        self.set_filter_slots()
+
+        # связываем вкладки с staked widget
+        self.ui.stackedWidget.setCurrentIndex(0)
+        self.ui.dnev.clicked.connect(lambda _: self.ui.stackedWidget.setCurrentIndex(0))
+        self.ui.but_ktp.clicked.connect(lambda _: self.ui.stackedWidget.setCurrentIndex(1))
+        self.ui.but_time.clicked.connect(lambda _: self.ui.stackedWidget.setCurrentIndex(2))
+
+
+    def set_filter_slots(self):
+        """
+        Функция устанавливает слоты для фильтрации
+        """
         self.mapper = QtCore.QSignalMapper()
         self.mapper.mapped[str].connect(self.filter_for_column)
 
