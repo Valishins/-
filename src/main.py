@@ -1,7 +1,7 @@
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtSql import QSqlTableModel
-from PyQt5.QtWidgets import QComboBox, QFileDialog, QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTableWidgetItem
+from PyQt5.QtWidgets import QComboBox, QFileDialog, QHeaderView, QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTableWidgetItem
 from PyQt5.QtWidgets import QTableWidgetItem, QWidget, QPushButton, QLineEdit
 
 from excel_writer import save_excel
@@ -21,6 +21,8 @@ class Tracker(QMainWindow):
         self.ui.tableView.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection);
         # добавление сортировки
         self.ui.tableView.setSortingEnabled(True)
+        # растяжение
+        self.ui.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
         # связываем сигналы и слоты
         self.ui.exchange.clicked.connect(self.process_add_or_update_button)
