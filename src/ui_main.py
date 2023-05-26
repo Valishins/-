@@ -258,6 +258,8 @@ class Ui_MainWindow(object):
         self.tableView = QtWidgets.QTableView(self.centralwidget)
         self.tableView.setGeometry(QtCore.QRect(20, 160, 1161, 511))
         self.tableView.setObjectName("tableView")
+        self.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows);
+        self.tableView.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection);
         self.layoutWidget = QtWidgets.QWidget(self.centralwidget)
         self.layoutWidget.setGeometry(QtCore.QRect(20, 10, 1161, 61))
         self.layoutWidget.setObjectName("layoutWidget")

@@ -1,23 +1,41 @@
-from PyQt5 import QtWidgets, QtSql
+from PyQt5 import QtSql
+import sqlite3
 
 class Data:
     def __init__(self):
-        super(Data, self).__init__()
-        print(self.create_connection())
+        if self.create_connection():
+            raise FileExistsError(
+                f"Database is not opened: { self.__db.lastError() }"
+            )
+        query = QtSql.QSqlQuery(db=self.__db)
+        query.exec(
+            "CREATE TABLE IF NOT EXISTS expense (ID integer primary key AUTOINCREMENT, Date VARCHAR(20), "
+            "number VARCHAR(20), predmet VARCHAR(20), grup REAL, vid VARCHAR(20), nedel VARCHAR(20), who VARCHAR(20))"
+        )
+
+    def __del__(self):
+        """
+        Destructor class with close connection
+        """
+        self.__db.close()
+
+    def get_conn(self):
+        """
+        Get connection database
+        """
+        return self.__db
 
     def create_connection(self):
-        db = QtSql.QSqlDatabase.addDatabase('QSQLITE')
-        db.setDatabaseName('expense.db')
-
-        if  db.open():
-            QtWidgets.QMessageBox.critical(None, "Cannot open database",
-                                           "Click Cancel to exit.", QtWidgets.QMessageBox.Cancel)
+        """
+        Create connection
+        """
+        self.__db = QtSql.QSqlDatabase.addDatabase('QSQLITE')
+        self.__db.setDatabaseName('expense.db')
+        if not self.__db.open():
+            return True
+        else:
             return False
 
-        query = QtSql.QSqlQuery()
-        query.exec("CREATE TABLE IF NOT EXISTS expense (ID integer primary key AUTOINCREMENT, Date VARCHAR(20), "
-                   "number VARCHAR(20), predmet VARCHAR(20), grup REAL, vid VARCHAR(20), nedel VARCHAR(20), who VARCHAR(20))")
-        return True
 
     def execute_query(self, sql_query, values=None):
         query = QtSql.QSqlQuery()

@@ -1,7 +1,7 @@
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtSql import QSqlTableModel
-from PyQt5.QtWidgets import QTableWidgetItem, QApplication, QMainWindow, QTableWidgetItem
+from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTableWidgetItem
 from PyQt5.QtWidgets import QTableWidgetItem, QWidget, QPushButton, QLineEdit
 
 
@@ -15,70 +15,120 @@ class Tracker(QMainWindow):
         super(Tracker, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.conn = Data()
         self.view_data()
+        # Назначаем метод выделения по строкам и только одну ячейку
+        self.ui.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows);
+        self.ui.tableView.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection);
 
-        # временный коммент
-        #  self.ui.btn_exchange.clicked.connect(self.open_new_transaction_window)
-        #  self.ui.btn_edit_transaction.clicked.connect(self.open_new_transaction_window)
-        #  self.ui.btn_delete_transaction.clicked.connect(self.delete_current_transaction)
-        #
-        #  self.ui.current_balance.setText(self.conn.total_balance())
-        #  self.ui.income_balance.setText(self.conn.total_income())
-        #  self.ui.outcome_balance.setText(self.conn.total_outcome())
-        #  self.ui.total_groceries.setText(self.conn.total_groceries())
-        #  self.ui.total_auto.setText(self.conn.total_auto())
-        #  self.ui.total_entertainment.setText(self.conn.total_entertainment())
-        #  self.ui.total_other.setText(self.conn.total_other())
+        # связываем сигналы и слоты
+        self.ui.exchange.clicked.connect(self.process_add_or_update_button)
+        self.ui.repear.clicked.connect(self.delete_current_transaction)
 
     def view_data(self):
-        self.model = QSqlTableModel(self)
-        self.model.setTable('expenses')
-        self.model.select()
-        self.ui.tableView.setModel(self.model)
+        """
+        Функция проверяет подключение к БД назначает модель, в случае ошибки
+        выходит из приложения
+        """
+        try:
+            self.conn = Data()
+            self.model = QSqlTableModel(self, self.conn.get_conn())
+            self.model.setTable('expense')
+            self.model.select()
+            self.ui.tableView.setModel(self.model)
+        except FileExistsError as err:
+            # В случае ошибки подключения выход с ошибкой
+            QtWidgets.QMessageBox.critical(self, f"Error connection",
+                                           f"{err},\nClick Cancel to exit.", QtWidgets.QMessageBox.Cancel)
+            sys.exit()
 
-    def open_new_transaction_window(self):
-        self.new_window = QtWidgets.QDialog()
-        self.ui_window = Ui_Dialog()
-        self.ui_window.setupUi(self.new_window)
-        self.new_window.show()
-        sender = self.sender()
-        if sender.text() == "New transaction":
-            self.ui_window.btn_new_transaction.clicked.connect(self.add_new_transaction)
+    @QtCore.pyqtSlot()
+    def process_add_or_update_button(self):
+        """
+        Function is used for processing add/update button
+        """
+        index = self.ui.tableView.selectedIndexes()
+        # если что-то выделено, то открываем обновление, если нет, то добавляем из combobox
+        if len(index) > 0:
+            self.update_row_into_table(index[0])
         else:
-            self.ui_window.btn_new_transaction.clicked.connect(self.edit_current_transaction)
+            self.insert_data_to_table()
 
-    def add_new_transaction(self):
-        month_1 = self.ui_window.dateEdit.text()
-        number_1 = self.ui_window.cb_choose_category.currentText()
-        item_1 = self.ui_window.le_description.text()
-        group_1 = self.ui_window.le_balance.text()
-        classes_1 = self.ui_window.cb_status.currentText()
+    def update_row_into_table(self, index: QtCore.QModelIndex):
+        """
+        Обновление поля в таблице
+        """
+        # создаем диалог
+        dialog = QtWidgets.QDialog()
+        ui_window = Ui_Dialog()
+        ui_window.setupUi(dialog)
+        dialog.setWindowTitle(f"Обновление ячейки {index.data()}")
+        print(f"Обновление ячейки {index.data()}")
+        # запускаем
+        ret_exec = dialog.exec()
+        if ret_exec == 1:
+            mounth = ui_window.comboBox_4.currentText()
+            number_lesson = ui_window.comboBox.currentText()
+            lesson = ui_window.comboBox_5.currentText()
+            group = ui_window.comboBox_2.currentText()
+            type_lesson = ui_window.comboBox_6.currentText()
+            week = ui_window.comboBox_3.currentText()
+            who = ui_window.comboBox_7.currentText()
+            self.conn.update_transaction_query(mounth,
+                                               number_lesson, lesson,
+                                               group, type_lesson, week, who,
+                                               index.data())
+        # Обновляем модель
+        self.model.select()
 
-        self.conn.add_new_transaction_query(month_1, number_1, item_1, group_1, classes_1, week_1, who_1)
-        self.view_data()
-        self.new_window.close()
+    def insert_data_to_table(self):
+        """
+        Функция добавляет данные в таблицу
+        """
+        # создаем диалог
+        dialog = QtWidgets.QDialog()
+        ui_window = Ui_Dialog()
+        ui_window.setupUi(dialog)
+        # запускаем
+        ret_exec = dialog.exec()
+        if ret_exec == 1:
+            mounth = ui_window.comboBox_4.currentText()
+            number_lesson = ui_window.comboBox.currentText()
+            lesson = ui_window.comboBox_5.currentText()
+            group = ui_window.comboBox_2.currentText()
+            type_lesson = ui_window.comboBox_6.currentText()
+            week = ui_window.comboBox_3.currentText()
+            who = ui_window.comboBox_7.currentText()
+            self.conn.add_new_transaction_query(mounth, number_lesson, lesson,
+                                                group, type_lesson, week, who)
+        # Обновляем модель
+        self.model.select()
 
-    def edit_current_transaction(self):
-        index = self.ui.tableView.selectedIndexes()[0]
-        id = str(self.ui.tableView.model().data(index))
-
-        date = self.ui_window.dateEdit.text()
-        category = self.ui_window.cb_choose_category.currentText()
-        description = self.ui_window.le_description.text()
-        balance = self.ui_window.le_balance.text()
-        status = self.ui_window.cb_status.currentText()
-
-        self.conn.update_transaction_query(month_1, number_1, item_1, group_1, classes_1, week_1, who_1, id)
-        self.view_data()
-        self.new_window.close()
-
+    @QtCore.pyqtSlot()
     def delete_current_transaction(self):
-        index = self.ui.tableView.selectedIndexes()[0]
-        id = str(self.ui.tableView.model().data(index))
+        """
+        Слот предназначен для удаления полей в таблице
+        """
+        index = self.ui.tableView.selectedIndexes()
+        # если что-то выделено, то открываем обновление, если нет, то добавляем из combobox
+        if len(index) > 0:
+            self.delete_row(index[0])
 
-        self.conn.delete_transaction_query(id)
-        self.view_data()
+    def delete_row(self, index: QtCore.QModelIndex):
+        """
+        Удаление ячейки
+        """
+        msgBox = QMessageBox()
+        msgBox.setIcon(QMessageBox.Information)
+        msgBox.setText(f"Вы хотите удалить ячейку с № {index.data()}")
+        msgBox.setWindowTitle("Удаление ячейки")
+        msgBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+
+        returnValue = msgBox.exec()
+        if returnValue == QMessageBox.Ok:
+            self.conn.delete_transaction_query(index.data())
+        # Обновляем модель
+        self.model.select()
+
 
 if __name__ == "__main__":
     import sys
