@@ -1,10 +1,10 @@
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtSql import QSqlTableModel
-from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTableWidgetItem
+from PyQt5.QtWidgets import QFileDialog, QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTableWidgetItem
 from PyQt5.QtWidgets import QTableWidgetItem, QWidget, QPushButton, QLineEdit
 
-
+from excel_writer import save_excel
 from ui_main import Ui_MainWindow
 from new_transaction import Ui_Dialog
 from connection import Data
@@ -23,6 +23,7 @@ class Tracker(QMainWindow):
         # связываем сигналы и слоты
         self.ui.exchange.clicked.connect(self.process_add_or_update_button)
         self.ui.repear.clicked.connect(self.delete_current_transaction)
+        self.ui.openes.clicked.connect(self.create_report)
 
     def view_data(self):
         """
@@ -40,6 +41,31 @@ class Tracker(QMainWindow):
             QtWidgets.QMessageBox.critical(self, f"Error connection",
                                            f"{err},\nClick Cancel to exit.", QtWidgets.QMessageBox.Cancel)
             sys.exit()
+
+    @QtCore.pyqtSlot()
+    def create_report(self):
+        """
+        Функция создает excel документ
+        """
+        rows = []
+        # Проходимся по полям таблицы и получаем список строк
+        for row in range(self.model.rowCount()):
+            data = []
+            for col in range(self.model.columnCount()):
+                data.append(
+                    str(self.model.record(row).value(col)) # обязательно данные преобразуем в str
+                )
+            rows.append(data)
+        # Открываем диалог для сохранения
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getSaveFileName(self,"QFileDialog.getSaveFileName()","",
+                                                  "All Files (*);;Excel files (*.xls, *.xlsx)", options=options)
+        # если имя указано то сохраняем результат
+        if fileName:
+            # сохранение результата
+            save_excel(fileName, rows)
+
 
     @QtCore.pyqtSlot()
     def process_add_or_update_button(self):
