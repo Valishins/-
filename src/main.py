@@ -123,7 +123,7 @@ class Tracker(QMainWindow):
             data = []
             for col in range(self.model.columnCount()):
                 data.append(
-                    str(self.model.record(row).value(col)) # обязательно данные преобразуем в str
+                    str(self.sql_model.record(row).value(col)) # обязательно данные преобразуем в str
                 )
             rows.append(data)
         # Открываем диалог для сохранения
