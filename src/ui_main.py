@@ -4,7 +4,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(900, 800)
+        MainWindow.resize(1200, 800)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
@@ -302,10 +302,10 @@ class Ui_MainWindow(object):
         self.page2.setObjectName("page2")
         self.stackedWidget.addWidget(self.page2)
         self.tableView_2 = QtWidgets.QTableView(self.page2)
-        self.tableView_2.setGeometry(QtCore.QRect(10, 10, 1091, 641))
+        self.tableView_2.setGeometry(QtCore.QRect(10, 10, 1151, 661))
         self.tableView_2.setObjectName("tableView_2")
         self.open_xl = QtWidgets.QPushButton(self.page2)
-        self.open_xl.setGeometry(QtCore.QRect(10, 660, 211, 31))
+        self.open_xl.setGeometry(QtCore.QRect(20, 680, 211, 30))
         self.open_xl.setObjectName("open_xl")
         self.stackedWidget.addWidget(self.page2)
         self.page3 = QtWidgets.QWidget()
@@ -321,9 +321,9 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.FIO.setCurrentText(_translate("MainWindow", "Стерлядева Лилия Венировна"))
-        self.FIO.setItemText(0, _translate("MainWindow", "Стерлядева Лилия Венировна"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Учёт"))
+        self.FIO.setCurrentText(_translate("MainWindow", "Стерлядева Л.В."))
+        self.FIO.setItemText(0, _translate("MainWindow", "Стерлядева Л.В."))
         self.dnev.setText(_translate("MainWindow", "Главная"))
         self.but_ktp.setText(_translate("MainWindow", "Дневник"))
         self.but_time.setText(_translate("MainWindow", "Часы"))
