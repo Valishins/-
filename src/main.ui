@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1141</width>
+    <height>768</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -50,7 +50,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Дневник</string>
+            <string>Главная</string>
            </property>
           </widget>
          </item>
@@ -64,7 +64,7 @@
             </font>
            </property>
            <property name="text">
-            <string>КТП</string>
+            <string>Дневник</string>
            </property>
           </widget>
          </item>
@@ -86,6 +86,9 @@
        </item>
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
+         <property name="currentIndex">
+          <number>1</number>
+         </property>
          <widget class="QWidget" name="page1">
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
@@ -686,7 +689,31 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="page2"/>
+         <widget class="QWidget" name="page2">
+          <widget class="QTableView" name="tableView_2">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>10</y>
+             <width>1091</width>
+             <height>641</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="open_xl">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>660</y>
+             <width>211</width>
+             <height>31</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Открыть</string>
+           </property>
+          </widget>
+         </widget>
          <widget class="QWidget" name="page3"/>
         </widget>
        </item>

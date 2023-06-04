@@ -1,4 +1,5 @@
 import sys
+import pandas as pd
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtSql import QSqlTableModel
 from PyQt5.QtWidgets import QComboBox, QFileDialog, QHeaderView, QMessageBox, QTableWidgetItem, QApplication, QMainWindow, QTableWidgetItem
@@ -28,6 +29,7 @@ class Tracker(QMainWindow):
         self.ui.exchange.clicked.connect(self.process_add_or_update_button)
         self.ui.repear.clicked.connect(self.delete_current_transaction)
         self.ui.openes.clicked.connect(self.create_report)
+        self.ui.open_xl.clicked.connect(self.loadExcelData)
 
         # связываем слоты фильтрации
         self.set_filter_slots()
@@ -128,6 +130,32 @@ class Tracker(QMainWindow):
                                            f"{err},\nClick Cancel to exit.", QtWidgets.QMessageBox.Cancel)
             sys.exit()
 
+    """
+    Чтение Excel файлов
+    """
+
+    def loadExcelData(self, excel_file_path, worksheet_name):
+        df = pd.read_excel(excel_file_path,
+                           skiprows=14,
+                           usecols='A:AG'
+                           )
+        if df.size == 0:
+            return
+        df.fillna('', inplace=True)
+        self.tableWidget.setRowCount(df.shape[0])
+        self.tableWidget.setColumnCount(df.shape[1])
+        self.tableWidget.setHorizontalHeaderLabels(df.columns)
+
+        for row in df.iterrows():
+            values = row[1]
+            for col_index, value in enumerate(values):
+                if isinstance(value, (float, int)):
+                    value = '{0:0,.0f}'.format(value)
+                tableItem = QtWidgets.QTableWidgetItem(str(value))
+
+                self.tableWidget.setItem(row[0], col_index, tableItem)
+
+
     @QtCore.pyqtSlot()
     def create_report(self):
         """
@@ -156,7 +184,7 @@ class Tracker(QMainWindow):
     @QtCore.pyqtSlot()
     def process_add_or_update_button(self):
         """
-        Function is used for processing add/update button
+        Функция используется для обработки кнопки добавления/обновления
         """
         index = self.ui.tableView.selectedIndexes()
         # если что-то выделено, то открываем обновление, если нет, то добавляем из combobox
